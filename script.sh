@@ -16,7 +16,7 @@ done
 
 
 
-echo $no_color"PREPAIRE INSTALLING";
+echo $no_color"PREPARING INSTALLATION";
 rm -rf /var/lib/dpkg/lock >> $script_log_file 2>/dev/null
 rm -rf /var/lib/dpkg/lock-frontend >> $script_log_file 2>/dev/null
 rm -rf /var/cache/apt/archives/lock >> $script_log_file 2>/dev/null
@@ -40,7 +40,7 @@ echo $green_color"[SUCCESS]";
 echo $green_color"[######################################]";
 
 
-echo $no_color"OPEN NGINX PORTS";
+echo $no_color"OPENING NGINX PORTS";
 echo "y" | sudo ufw enable  >> $script_log_file 2>/dev/null
 sudo ufw allow 'Nginx HTTP' >> $script_log_file 2>/dev/null
 sudo ufw allow 'Nginx HTTPS' >> $script_log_file 2>/dev/null
@@ -139,9 +139,6 @@ sudo service nginx restart >> $script_log_file 2>/dev/null
 echo $green_color"[SUCCESS]";
 echo $green_color"[######################################]";
 
-
-
-
 echo $no_color"GENERATING SSL CERTIFICATE FOR $domain"
 certbot --nginx -d $domain -d www.$domain --non-interactive --agree-tos -m admin@$domain >> $script_log_file 2>/dev/null
 rm -rf /etc/nginx/sites-available/$domain >> $script_log_file 2>/dev/null
@@ -158,7 +155,7 @@ sudo bash -c "echo 'server {
     if (!-d \$request_filename) {
       rewrite ^/(.+)/$ /\$1 permanent;
     }
-    if (\$request_uri ~* "\/\/") {
+    if (\$request_uri ~* \"\/\/\") {
       rewrite ^/(.*) /\$1 permanent;
     }
     location ~ \.(env|log|htaccess)\$ {
@@ -243,14 +240,13 @@ echo $green_color"[######################################]";
 fi
 
 echo $green_color"CHANGING PHP FPM UPLOAD VALUES";
-sudo sed -i 's/post_max_size = 8M/post_max_size = 1000M/g' /etc/php/8.2/fpm/php.ini >> $script_log_file 2>/dev/null
-sudo sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 1000M/g' /etc/php/8.2/fpm/php.ini >> $script_log_file 2>/dev/null
-sudo sed -i 's/max_execution_time = 30/max_execution_time = 300/g' /etc/php/8.2/fpm/php.ini >> $script_log_file 2>/dev/null
-sudo sed -i 's/memory_limit = 128/memory_limit = 12800/g' /etc/php/8.2/fpm/php.ini >> $script_log_file 2>/dev/null
+sudo sed -i 's/post_max_size = 8M/post_max_size = 1000M/g' /etc/php/8.0/fpm/php.ini >> $script_log_file 2>/dev/null
+sudo sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 1000M/g' /etc/php/8.0/fpm/php.ini >> $script_log_file 2>/dev/null
+sudo sed -i 's/max_execution_time = 30/max_execution_time = 300/g' /etc/php/8.0/fpm/php.ini >> $script_log_file 2>/dev/null
+sudo sed -i 's/memory_limit = 128/memory_limit = 12800/g' /etc/php/8.0/fpm/php.ini >> $script_log_file 2>/dev/null
 sudo service php8.0-fpm restart >> $script_log_file 2>/dev/null
 echo $green_color"[SUCCESS]";
 echo $green_color"[######################################]";
-
 
 if ! [ -x "$(command -v mysql)"  >> $script_log_file 2>/dev/null ]; then
 echo $green_color"[MYSQL ALREADY INSTALLED!]";
@@ -267,7 +263,13 @@ echo $no_color"PUSHING CRONJOBS";
 echo $green_color"[SUCCESS]";
 echo $green_color"[######################################]";
 
-echo $no_color"FINALIZE INSTALLING";
+echo $no_color"INSTALLING phpMyAdmin";
+sudo apt-get install phpmyadmin -y >> $script_log_file 2>/dev/null
+sudo ln -s /usr/share/phpmyadmin /var/www/html/$domain/public/phpmyadmin >> $script_log_file 2>/dev/null
+echo $green_color"[SUCCESS]";
+echo $green_color"[######################################]";
+
+echo $no_color"FINALIZING INSTALLATION";
 sudo apt-get autoremove -y >> $script_log_file 2>/dev/null
 sudo apt-get autoclean -y >> $script_log_file 2>/dev/null
 sudo apt-get update  >> $script_log_file 2>/dev/null
