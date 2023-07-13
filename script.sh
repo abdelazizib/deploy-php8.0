@@ -140,6 +140,7 @@ echo $green_color"[SUCCESS]";
 echo $green_color"[######################################]";
 
 echo $no_color"GENERATING SSL CERTIFICATE FOR $domain"
+sudo certbot certonly --webroot --webroot-path /var/www/html/$domain/public -d $domain -d www.$domain -m admin@$domain
 certbot --nginx -d $domain -d www.$domain --non-interactive --agree-tos -m admin@$domain >> $script_log_file 2>/dev/null
 rm -rf /etc/nginx/sites-available/$domain >> $script_log_file 2>/dev/null
 sudo touch /etc/nginx/sites-available/$domain >> $script_log_file 2>/dev/null
