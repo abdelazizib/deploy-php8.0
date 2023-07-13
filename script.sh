@@ -263,12 +263,6 @@ echo $no_color"PUSHING CRONJOBS";
 echo $green_color"[SUCCESS]";
 echo $green_color"[######################################]";
 
-echo $no_color"INSTALLING phpMyAdmin";
-sudo apt-get install phpmyadmin -y >> $script_log_file 2>/dev/null
-sudo ln -s /usr/share/phpmyadmin /var/www/html/$domain/public/phpmyadmin >> $script_log_file 2>/dev/null
-echo $green_color"[SUCCESS]";
-echo $green_color"[######################################]";
-
 echo $no_color"FINALIZING INSTALLATION";
 sudo apt-get autoremove -y >> $script_log_file 2>/dev/null
 sudo apt-get autoclean -y >> $script_log_file 2>/dev/null
